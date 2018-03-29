@@ -31,7 +31,7 @@ void getPrime(int number) {
   static ProcessPool* mypool = ProcessPool::creatPool(progress_number);
   int loc = 0;
 
-  if (mypool -> getIndex() == -1) {
+  if (mypool -> getIndex() < 0) {
     //这个进程代表的是父进程
     int father_range = number1 / (progress_number + 1) + number1 % (progress_number + 1) + 1;
     vector<bool> num(father_range, true);
@@ -52,6 +52,8 @@ void getPrime(int number) {
     for (int i = 0; i < progress_number; i++) {
       close(mypool->getSubProcess()[i].getfds()[1]);
     }
+
+    //等待所有的子进程全部结束
     int size = num.size();
     cout << "progress 0: ";
     for (int i = 0; i < size; i++) {
@@ -60,7 +62,14 @@ void getPrime(int number) {
       }
     }
     cout << endl;
+    int status;
+    pid_t wpid;
+    while ((wpid = wait(&status)) > 0);
     clock_t now = clock();
+    int processId = mypool -> getIndex() + progress_number + 1;
+    clock_t start = mypool -> getSubProcess()[processId].getBeginTime();
+    double time = (double)(now - start) / CLOCKS_PER_SEC;
+    cout << "Totaltime: " << time << endl << endl;
   } else {
     int index = mypool -> getIndex();
     int low_bound = number1 / (progress_number + 1) * (index + 1) + number1 % (progress_number + 1) + 1;
@@ -90,6 +99,10 @@ void getPrime(int number) {
       }
     }
     cout << endl;
+    clock_t now = clock();
+    clock_t start = mypool -> getSubProcess()[index].getBeginTime();
+    double time = (double)(now - start) / CLOCKS_PER_SEC;
+    cout << "time: " << time << endl << endl;
   }
 }
 

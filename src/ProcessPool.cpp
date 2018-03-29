@@ -16,11 +16,16 @@ ProcessPool::ProcessPool(int number) :process_number(number), index(-1) {
     if (pid < 0) {
       std::cerr << "fork err\n";
     } else if (pid > 0) {
-      //父亲进程只能写，不能读
+      //父亲进程
+      clock_t beginTime = clock();
       sub_process[i].setId(pid);
+      sub_process[i].setBeginTime(beginTime);
+      index = i - number;
       close(sub_process[i].getfds()[0]);
     } else {
       //子进程
+      clock_t beginTime = clock();
+      sub_process[i].setBeginTime(beginTime);
       index = i;
       close(sub_process[i].getfds()[1]);
       //关于这里的break其实还是有疑问的

@@ -1,2 +1,2 @@
 # parallel_computing
-some code about the parallel computing sieve
+some code about the parallel prime number sieve
